@@ -24,8 +24,17 @@ private:
 public:
     MyDictionary();
 
-    bool has_key(const char * const key);
-    bool add_value_for_key(const char * const value, const char * const key);
+    bool    has_key(const char * const key);
+    bool    add_value_for_key(const char * const value, const char * const key);
+    bool    delete_key(const char * const key, char **value);
+    
+    bool    get_value_for_key(const char * const key, char **value);
+private:
+    bool    extract_value_for_key(char **value, const char * const key);
+    FakeDict::iterator  get_iterator_for_key(const char * const key);
+    bool    get_key(const char * const key, FakeDict::iterator *it);
+    bool    _add(const char * const value, const char * const key);
+    bool    _update(const char * const value, FakeDict::iterator it);
 };
 
 #endif /* defined(__MyCrd__mydictionnary__) */

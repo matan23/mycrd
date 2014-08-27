@@ -12,39 +12,65 @@
 #include "str_to_wtb.h"
 #include "mydictionnary.h"
 
+MyDictionary *mydict;
+
+void add_cmd(const char * const key, const char * const value)
+{
+    if (mydict->add_value_for_key(value, key))
+    {
+        puts("\tits an update");
+    }
+    else
+    {
+        puts("\tits an add");
+    }
+    puts(key);
+}
+
+void delete_cmd(const char * const key)
+{
+    char *value;
+    
+    puts("\tdeletion");
+    if (mydict->delete_key(key, &value))
+        puts(value);
+    else
+        puts("-1");
+}
+
 void parser(char **cmd_val, int nb_words)
 {
-    MyDictionary *mydict;
-
-    mydict = new MyDictionary();
-
+    char *key;
+    char *value;
+    
+    key = cmd_val[0];
+    value = cmd_val[1];
     if (nb_words == 1)
     {
-        puts("recherche..");
-        if (mydict->has_key(cmd_val[1]))
-            puts("trouve!");
+        puts("\trecherche..");
+        if (mydict->get_value_for_key(key, &value))
+            puts(value);
         else
-            puts("non trouve");
+            puts("-1");
     }
     else
     {
         if (!strcmp(cmd_val[1], "D"))
-            puts("deletion");
+        {
+            delete_cmd(key);
+        }
         else
         {
-            if (mydict->has_key(cmd_val[1]))
-                puts("update");
-            else
-            {
-                puts("add");
-                mydict->add_value_for_key(cmd_val[1], cmd_val[0]);
-            }
+            add_cmd(key, value);
         }
     }
 }
 
 int main(int argc, const char * argv[])
 {
+//    singleton
+    mydict = new MyDictionary();
+    
     char *str;
     char **cmd_val;
     int nb_words;
@@ -52,9 +78,12 @@ int main(int argc, const char * argv[])
     puts("LETSGO");
     while ((str = get_next_line(0)))
    {
-       cmd_val = str_to_wtb(str, &nb_words);
+       if (*str)
+       {
+           cmd_val = str_to_wtb(str, &nb_words);
+           parser(cmd_val, nb_words);
+       }
        free(str);
-       parser(cmd_val, nb_words);
 //       printf("%s:%s\n", cmd_val[0], cmd_val[1]);
    }
     return 0;
