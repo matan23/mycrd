@@ -12,7 +12,7 @@
 #include <iostream>
 
 
-#define HASHSIZE 101
+#define HASHSIZE 50000
 
 typedef struct      s_list
 {

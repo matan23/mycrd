@@ -68,6 +68,17 @@ void parser(char **cmd_val, int nb_words)
     }
 }
 
+void    free_wtb(char **tab, unsigned int nb_words)
+{
+    int i;
+
+    for (i = 0; i < nb_words; ++i)
+    {
+        free(tab[i]);
+    }
+    free(tab);
+}
+
 int main(int argc, const char * argv[])
 {
 //    singleton
@@ -84,6 +95,7 @@ int main(int argc, const char * argv[])
        {
            cmd_val = str_to_wtb(str, &nb_words);
            parser(cmd_val, nb_words);
+           free_wtb(cmd_val, nb_words);
        }
        free(str);
        str = NULL;

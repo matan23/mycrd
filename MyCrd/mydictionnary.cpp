@@ -133,6 +133,7 @@ t_list              *MyDictionary::install_new_node_in_hashtab(t_list *node, t_l
 
     assert(hashtab);
     hashval = hash(node->key);
+//    printf("hash = %u\n", hashval);
     node->next = hashtab[hashval];
     hashtab[hashval] = node;
     return node;
