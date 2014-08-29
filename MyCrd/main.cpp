@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "get_next_line.h"
 #include "str_to_wtb.h"
 #include "mydictionnary.h"
