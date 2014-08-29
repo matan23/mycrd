@@ -18,11 +18,11 @@ void add_cmd(const char * const key, const char * const value)
 {
     if (mydict->add_value_for_key(value, key))
     {
-        puts("\tits an update");
+        puts("\t its an insert");
     }
     else
     {
-        puts("\tits an add");
+        puts("\t its an update");
     }
     puts(key);
 }
@@ -48,7 +48,7 @@ void parser(char **cmd_val, int nb_words)
     if (nb_words == 1)
     {
         puts("\trecherche..");
-        if (mydict->get_value_for_key(key, &value))
+        if (mydict->value_for_key(key, &value))
             puts(value);
         else
             puts("-1");
@@ -84,7 +84,7 @@ int main(int argc, const char * argv[])
            parser(cmd_val, nb_words);
        }
        free(str);
-//       printf("%s:%s\n", cmd_val[0], cmd_val[1]);
+       str = NULL;
    }
     return 0;
 }

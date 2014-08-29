@@ -7,97 +7,122 @@
 //
 
 #include <string>
+#include <assert.h>
+#include <exception>
+#include <stdexcept>
 #include "mydictionnary.h"
 
 MyDictionary::MyDictionary()
 {
-    _real_obj = new FakeDict;
-}
-
-bool    MyDictionary::has_key(const char *const key)
-{
-//    map<int,Bar>::iterator it = m.find('2');
-    FakeDict::iterator it;
-
-    if (_real_obj->size())
-    {
-        if (this->get_key(key, &it))
-            return true;
-        else
-            return false;
-    }
-    return false;
+    this->_hashtab = (t_list **)malloc(sizeof(*_hashtab) * HASHSIZE);
+    if (!this->_hashtab)
+        throw 2323;
 }
 
 bool    MyDictionary::add_value_for_key(const char * const value, const char * const key)
 {
-    FakeDict::iterator it;
-    
-    if (this->get_key(key, &it))
-    {
-        this->_update(value, it);
-        return true;
-    }
-    else
-    {
-        this->_add(value, key);
+    return this->upsert(key, value);
+}
+
+bool        MyDictionary::delete_key(const char * const key, char **value)
+{
+    t_list  *node;
+
+    if (!(node = find_node_by_key(key)))
         return false;
-    }
-}
-
-bool    MyDictionary::delete_key(const char * const key, char **value)
-{
-    FakeDict::iterator it;
-    std::string extracted;
     
-    if (this->get_key(key, &it))
-    {
-        extracted = it->second.c_str();
-        *value = strdup(extracted.c_str());
-//        value = strdup(->c_str());
-        _real_obj->erase(it);
-        return true;
-    }
-    return false;
-}
-
-bool    MyDictionary::get_value_for_key(const char * const key, char **value)
-{
-    return this->extract_value_for_key(value, key);
-}
-
-//private
-bool    MyDictionary::_add(const char * const value, const char * const key)
-{
-    _real_obj->insert(FakePair(key, value));
     return true;
 }
 
-bool    MyDictionary::_update(const char * const value, FakeDict::iterator it)
+bool        MyDictionary::value_for_key(const char * const key, char ** const value)
 {
-    it->second = std::string(value);
+    t_list  *node;
+
+    if ((node = find_node_by_key(key)) == NULL)
+        return false;
+    *value = node->value;
     return true;
 }
 
-bool  MyDictionary::extract_value_for_key(char **value, const char * const key)
+
+//private API
+
+unsigned int    MyDictionary::hash(const char *s)
 {
-    FakeDict::iterator it;
-    
-    if (this->get_key(key, &it))
+    unsigned hashval;
+
+    for (hashval = 0; *s; ++s)
+        hashval = *s + 31 * hashval;
+    return hashval % HASHSIZE;
+}
+
+t_list          *MyDictionary::find_node_by_key(const char *key)
+{
+    t_list *node;
+
+    assert(this->_hashtab);
+    assert(key);
+    for (node = this->_hashtab[hash(key)]; node; node = node->next)
+        if (!strcmp(key, node->key))
+            return node;
+    return NULL;
+}
+
+bool            MyDictionary::upsert(const char *key, const char *value)
+{
+    t_list      *node;
+    bool        action_is_insert;
+
+    assert(key);
+    assert(value);
+    action_is_insert = false;
+    if (!(node = update_node_with_key_for_value(key, value)))
     {
-        *value = strdup(it->second.c_str());
-        return true;
+        node = this->create_new_node_with_key_and_value(key, value);
+        if (node)
+        {
+            this->install_new_node_in_hashtab(node, this->_hashtab);
+            action_is_insert = true;
+        }
     }
-    return false;
+    return action_is_insert;
 }
 
-bool  MyDictionary::get_key(const char * const key, FakeDict::iterator *it)
+t_list          *MyDictionary::create_new_node_with_key_and_value(const char *key, const char *value)
 {
-    *it = _real_obj->find(key);
-    return (*it != _real_obj ->end());
+    t_list      *new_node;
+
+    if ((new_node = (t_list *)malloc(sizeof(*new_node))))
+    {
+        new_node->key = strdup(key);
+        new_node->value = strdup(value);
+        if (!new_node->key || !new_node->value)
+            return NULL;
+        return new_node;
+    }
+    return NULL;
 }
 
-FakeDict::iterator  MyDictionary::get_iterator_for_key(const char * const key)
+t_list              *MyDictionary::install_new_node_in_hashtab(t_list *node, t_list **hashtab)
 {
-    return _real_obj->find(key);
+    unsigned int    hashval;
+
+    assert(hashtab);
+    hashval = hash(node->key);
+    node->next = hashtab[hashval];
+    hashtab[hashval] = node;
+    return node;
+}
+
+t_list          *MyDictionary::update_node_with_key_for_value(const char *key,const char *value)
+{
+    t_list      *node;
+
+    if (!(node = find_node_by_key(key)))
+        return NULL;
+    assert(key);
+    free(node->value);
+    if (!(node->value = strdup(value)))
+        return NULL;
+    return node;
 }
