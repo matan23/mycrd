@@ -19,6 +19,7 @@ typedef struct      s_list
     char            *key;
     char            *value;
     struct s_list   *next;
+    struct s_list   *prev;
 }                   t_list;
 
 
@@ -26,9 +27,11 @@ class MyDictionary
 {
 private:
     t_list     **_hashtab;
+    t_list      *_head;
 
 public:
     MyDictionary();
+    ~MyDictionary();
 
 //    bool    has_key(const char * const key);
     bool    add_value_for_key(const char * const value, const char * const key);

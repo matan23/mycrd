@@ -17,13 +17,13 @@ MyDictionary *mydict;
 void add_cmd(const char * const key, const char * const value)
 {
     if (mydict->add_value_for_key(value, key))
-    {
-        puts("\t its an insert");
-    }
-    else
-    {
-        puts("\t its an update");
-    }
+//    {
+//        puts("\t its an insert");
+//    }
+//    else
+//    {
+//        puts("\t its an update");
+//    }
     puts(key);
 }
 
@@ -31,7 +31,7 @@ void delete_cmd(const char * const key)
 {
     char *value;
     
-    puts("\tdeletion");
+//    puts("\tdeletion");
     if (mydict->delete_key(key, &value))
         puts(value);
     else
@@ -47,7 +47,7 @@ void parser(char **cmd_val, int nb_words)
     value = cmd_val[1];
     if (nb_words == 1)
     {
-        puts("\trecherche..");
+//        puts("\trecherche..");
         if (mydict->value_for_key(key, &value))
             puts(value);
         else
@@ -74,8 +74,8 @@ int main(int argc, const char * argv[])
     char *str;
     char **cmd_val;
     int nb_words;
-    // insert code here...
-    puts("LETSGO");
+
+//    puts("LETSGO");
     while ((str = get_next_line(0)))
    {
        if (*str)
@@ -86,6 +86,7 @@ int main(int argc, const char * argv[])
        free(str);
        str = NULL;
    }
+    delete mydict;
     return 0;
 }
 

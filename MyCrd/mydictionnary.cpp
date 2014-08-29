@@ -19,18 +19,38 @@ MyDictionary::MyDictionary()
         throw 2323;
 }
 
+MyDictionary::~MyDictionary()
+{
+    t_list      *old;
+
+    while (_head)
+    {
+        old = _head;
+        free(_head->key);
+        free(_head->value);
+        _head = _head->next;
+        free(old);
+    }
+}
+
+
 bool    MyDictionary::add_value_for_key(const char * const value, const char * const key)
 {
     return this->upsert(key, value);
 }
 
-bool        MyDictionary::delete_key(const char * const key, char **value)
+bool                MyDictionary::delete_key(const char * const key, char **value)
 {
-    t_list  *node;
+    t_list          *node;
+    unsigned int    hashval;
 
     if (!(node = find_node_by_key(key)))
         return false;
-    
+
+    hashval = hash(key);
+    assert(_hashtab[hashval]);
+    *value = _hashtab[hashval]->value;
+    _hashtab[hashval] = NULL;
     return true;
 }
 
@@ -91,9 +111,12 @@ bool            MyDictionary::upsert(const char *key, const char *value)
 t_list          *MyDictionary::create_new_node_with_key_and_value(const char *key, const char *value)
 {
     t_list      *new_node;
+    static int  i;
 
     if ((new_node = (t_list *)malloc(sizeof(*new_node))))
     {
+        if (i++ == 0)
+            _head = new_node;
         new_node->key = strdup(key);
         new_node->value = strdup(value);
         if (!new_node->key || !new_node->value)

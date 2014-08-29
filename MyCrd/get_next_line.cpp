@@ -18,7 +18,9 @@ static int	xread(int fd, char *buffer, size_t const size)
     int		ret;
 
     if ((ret = (int)read(fd, buffer, size)) == -1)
+    {
         exit(EXIT_FAILURE);
+    }
     return (ret);
 }
 
