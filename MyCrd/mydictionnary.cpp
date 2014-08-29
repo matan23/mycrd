@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 experiences. All rights reserved.
 //
 
-#include <string>
+#include <string.h>
 #include <assert.h>
 #include <exception>
 #include <stdexcept>

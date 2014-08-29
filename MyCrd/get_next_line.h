@@ -12,6 +12,13 @@
 #  define	BUFF_SIZE	1024
 #  define	READ_SIZE	BUFF_SIZE - 1
 
-char		*get_next_line(int);
+char    *get_next_line(const int fd);
+
+#define READ_B  512
+#define BUFFER  4096
+
+#define CHAR_IS_NEWLINE(c)  c == '\n'
+
+char    *gnl(const int fd, int *index, char *buff);
 
 #endif
